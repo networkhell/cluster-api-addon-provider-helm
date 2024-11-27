@@ -19,6 +19,7 @@ package helmchartproxy
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
@@ -189,7 +190,7 @@ func (r *HelmChartProxyReconciler) deleteHelmReleaseProxy(ctx context.Context, h
 func constructHelmReleaseProxy(existing *addonsv1alpha1.HelmReleaseProxy, helmChartProxy *addonsv1alpha1.HelmChartProxy, parsedValues string, cluster *clusterv1.Cluster) *addonsv1alpha1.HelmReleaseProxy {
 	helmReleaseProxy := &addonsv1alpha1.HelmReleaseProxy{}
 	if existing == nil {
-		helmReleaseProxy.GenerateName = fmt.Sprintf("%s-%s-", helmChartProxy.Spec.ChartName, cluster.Name)
+		helmReleaseProxy.GenerateName = fmt.Sprintf("%s-%s-", strings.ReplaceAll(helmChartProxy.Spec.ChartName, "/", "-"), cluster.Name)
 		helmReleaseProxy.Namespace = helmChartProxy.Namespace
 		helmReleaseProxy.OwnerReferences = util.EnsureOwnerRef(helmReleaseProxy.OwnerReferences, *metav1.NewControllerRef(helmChartProxy, helmChartProxy.GroupVersionKind()))
 
